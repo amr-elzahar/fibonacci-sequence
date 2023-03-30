@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-data/:/var/lib/postgresql/data
+    networks:
+      - fibonacci
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - fibonacci
+  backend:
+    build: ./server
+    container_name: fib-backend
+    env_file:
+      - ./server/.env
+    ports:
+      - 4000:4000
+    networks:
+      - fibonacci
+    depends_on:
+      - postgres
+      - redis
+  frontend:
+    build: ./client
+    container_name: fib-frontend
+    ports:
+      - 3000:3000
+networks:
+  fibonacci:

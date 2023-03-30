@@ -4,7 +4,7 @@ An application that calculates the value corresponding to a specific index in fi
 
 # Description
 
-This is a full-stack application that consists of a React client, a Node.js server, a Postgres DB container, and a Redis container. The application allows users to input an index value for the Fibonacci series and receives back the corresponding value from either Redis. If the requested index already exists in Redis cache, the server returns its corresponding value from Redis. If not, it calculates its value using a helper function, inserts both the index and its value into the Postgres database for permanent storage, and saves them in Redis for in-memory caching.
+This is a full-stack application that consists of a React client, a Node.js server, a Postgres DB container, and a Redis container. The application allows users to input an index value for the Fibonacci series and receives back the corresponding value from either Redis. If the requested index already exists in Redis cache, the server returns its corresponding value from Redis. If not, it calculates its value using a helper function, inserts both the index and its value into the Postgres database for permanent storage, and saves them in Redis for in-memory caching. The init.sql file is script will run when the postgres container starts to create the database and the table. The script.sh file to create bind volume directories locally in order not to encounter any errors later.
 
 # Installation
 
@@ -22,7 +22,8 @@ git clone https://github.com/amr-elzahar/fibonacci-sequence.git
 cd fibonacci-sequence/
 ```
 
-3. Run this command to create bind volumes directories locally (if they don't already exist):
+3. (Optional)Run this command to create bind volumes directories locally (if they don't already exist):
+   HINT: Do this step if you get an error when running `docker compose up -d` that tells you the redis-data/ and postgres-data/ direcories are not found.
 
 ```
 bash script.sh

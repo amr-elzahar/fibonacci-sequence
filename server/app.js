@@ -1,5 +1,4 @@
 const express = require("express");
-const redis = require("redis");
 const cors = require("cors");
 const { Pool } = require("pg");
 
@@ -15,20 +14,6 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 
-const redisClient = redis.createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-});
-
-redisClient.on("error", () => {
-  console.log("An error occured");
-});
-
-redisClient.on("connect", () => {
-  console.log("SUCCESSFULLY CONNECTED");
-});
-
-redisClient.connect();
-
 function calculateFibonacci(index) {
   if (index <= 1) {
     return 1;
@@ -41,23 +26,24 @@ app.post("/fibonacci/:index", async (req, res) => {
   // Extracting the requested fibonacci sequence index
   const index = parseInt(req.params.index);
 
-  // check if the current index value exists in redis chach already
-  const keyExists = await redisClient.get(index.toString());
+  // check if the current index value exists in the fibonacci table already
+  const result = await pool.query(
+    "SELECT value FROM fibonacci WHERE index = $1",
+    [index]
+  );
 
-  // If it exists, return its corresponding value from redis
-  if (keyExists) {
-    const value = await redisClient.get(index.toString());
-    return res.status(200).send({ index: value });
+  // If it exists, return its corresponding value
+  if (result.rows.length > 0) {
+    const { value } = result.rows[0];
+    return res.status(200).send({ index, value });
   }
-  // If it does not exist, calculate its value using a helper function and insert both the index and value into the table and redis chach
+  // If it does not exist, calculate its value using a helper function and insert both the index and value into the table
   else {
     const value = calculateFibonacci(index);
     await pool.query("INSERT INTO fibonacci (index, value) VALUES ($1, $2)", [
       index,
       value,
     ]);
-
-    await redisClient.set(index.toString(), value);
 
     return res.status(200).send({ index, value });
   }

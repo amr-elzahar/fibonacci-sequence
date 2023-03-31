@@ -22,14 +22,20 @@ git clone https://github.com/amr-elzahar/fibonacci-sequence.git
 cd fibonacci-sequence/
 ```
 
-3. (Optional) Run this command to create bind volumes directories locally (if they don't already exist):
+3. Run this command to switch to main branch:
+
+```
+git switch main
+```
+
+4. (Optional) Run this command to create bind volumes directories locally (if they don't already exist):
    HINT: Do this step if you get an error when running `docker compose up -d` that tells you the redis-data/ and postgres-data/ direcories are not found.
 
 ```
 bash script.sh
 ```
 
-4. Run the command to build the images and start the containers:
+5. Run the command to build the images and start the containers:
 
 ```
 docker compose up -d

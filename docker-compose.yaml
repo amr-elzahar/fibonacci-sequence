@@ -8,14 +8,18 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./postgres-data/:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - fibonacci
   backend:
     build: ./server
     container_name: fib-backend
-    env_file:
-      - ./server/.env
+    environment:
+      - PORT=4000
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=fibonacci
     ports:
       - 4000:4000
     networks:
@@ -29,3 +33,5 @@ services:
       - 3000:3000
 networks:
   fibonacci:
+volumes:
+  postgres-data:
